@@ -178,12 +178,6 @@ const deleteProduct = async (id: string) => {
     return deleted;
 };
 
-// ── Adjust Stock ──────────────────────────────────────────────────────────────
-/**
- * Incrementally adjust stock (positive = restock, negative = sale/return).
- * Status is automatically updated by the model pre-hook.
- */
-
 
 // ── Restock Queue ─────────────────────────────────────────────────────────────
 /**
@@ -219,66 +213,6 @@ const getRestockQueue = async () => {
 };
 
 
-// const adjustStock = async (id: string, delta: number) => {
-//     const product = await Product.findById(id);
-//     if (!product) {
-//         throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
-//     }
-
-//     const newQty = (product.stockQuantity ?? 0) + delta;
-//     if (newQty < 0) {
-//         throw new AppError(
-//             httpStatus.BAD_REQUEST,
-//             `Insufficient stock. Current stock: ${product.stockQuantity ?? 0}`,
-//             'Stock underflow',
-//         );
-//     }
-
-//     product.stockQuantity = newQty;
-//     await product.save();
-
-//     return product;
-// };
-
-
-// /**
-//  * Restock a product: set an absolute stock quantity.
-//  * The pre-save hook automatically updates status and clears restockIgnored.
-//  */
-// const restockProduct = async (id: string, newQuantity: number) => {
-//     const product = await Product.findById(id);
-//     if (!product) {
-//         throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
-//     }
-//     if (newQuantity < 0) {
-//         throw new AppError(
-//             httpStatus.BAD_REQUEST,
-//             'Stock quantity cannot be negative',
-//             'Invalid quantity',
-//         );
-//     }
-
-//     product.stockQuantity  = newQuantity;
-//     product.restockIgnored = false;
-//     await product.save();
-
-//     return product;
-// };
-
-// /**
-//  * Dismiss a product from the restock queue without restocking.
-//  * Admin can bring it back by restocking via restockProduct.
-//  */
-// const dismissFromRestockQueue = async (id: string) => {
-//     const product = await Product.findById(id);
-//     if (!product) {
-//         throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
-//     }
-
-//     product.restockIgnored = true;
-//     await product.save();
-//     return product;
-// };
 
 export const productServices = {
     createProduct,
@@ -287,7 +221,5 @@ export const productServices = {
     updateProduct,
     deleteProduct,
     getRestockQueue,
-    //     adjustStock,
-    //     restockProduct,
-    //     dismissFromRestockQueue,
+
 };

@@ -26,10 +26,11 @@ const createOrder = async (payload: TOrder
     }
 
     // ── 3. Duplicate active order guard ────────────────────────────────────────
-    // Prevent placing a new order for a product that already has a pending/confirmed order open
+    // Prevent placing a new order for a product that already has a pending order open
     const duplicateOrder = await Order.findOne({
         productId: product._id,
         orderStatus: { $in: ['pending'] },
+        // customerName: customerName,
     });
     if (duplicateOrder) {
         throw new AppError(
