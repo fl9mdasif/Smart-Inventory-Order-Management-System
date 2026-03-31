@@ -25,14 +25,8 @@ const moduleRoute = [
     path: '/orders',
     route: orderRoutes,
   },
-  // {
-  //   path: '/users',
-  //   route: userRoutes,
-  // },
-  // {
-  //   path: '/carts',
-  //   route: cartRoutes,
-  // },
+
+
 ];
 
 moduleRoute.forEach((routeObj) => router.use(routeObj.path, routeObj.route));

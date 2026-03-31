@@ -61,19 +61,61 @@ const deleteProduct = catchAsync(async (req, res) => {
     });
 });
 
-// ── Adjust Stock ───────────────────────────────────────────────────────────────
-// body: { delta: number }  (positive = restock, negative = deduct)
-const adjustStock = catchAsync(async (req, res) => {
-    const { productId } = req.params;
-    const { delta } = req.body;
-    const result = await productServices.adjustStock(productId, delta);
+
+// ── Restock Queue ──────────────────────────────────────────────────────────────
+// GET /api/products/restock-queue
+const getRestockQueue = catchAsync(async (req, res) => {
+    const result = await productServices.getRestockQueue();
     response.createSendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: `Stock adjusted by ${delta > 0 ? '+' : ''}${delta}. Current stock: ${result.stockQuantity}`,
+        message: `Restock queue retrieved (${result.length} product${result.length !== 1 ? 's' : ''} need restocking)`,
         data: result,
     });
 });
+
+
+// // ── Adjust Stock ───────────────────────────────────────────────────────────────
+// // body: { delta: number }  (positive = restock, negative = deduct)
+// const adjustStock = catchAsync(async (req, res) => {
+//     const { productId } = req.params;
+//     const { delta } = req.body;
+//     const result = await productServices.adjustStock(productId, delta);
+//     response.createSendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: `Stock adjusted by ${delta > 0 ? '+' : ''}${delta}. Current stock: ${result.stockQuantity}`,
+//         data: result,
+//     });
+// });
+
+
+// // PATCH /api/products/:productId/restock
+// // body: { quantity: number }  — sets absolute stock level
+// const restockProduct = catchAsync(async (req, res) => {
+//     const { productId } = req.params;
+//     const { quantity } = req.body;
+//     const result = await productServices.restockProduct(productId, quantity);
+//     response.createSendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: `Stock updated to ${result.stockQuantity}. Status: ${result.status}`,
+//         data: result,
+//     });
+// });
+
+// // DELETE /api/products/:productId/restock-queue
+// // Dismiss product from the restock queue without restocking
+// const dismissFromRestockQueue = catchAsync(async (req, res) => {
+//     const { productId } = req.params;
+//     const result = await productServices.dismissFromRestockQueue(productId);
+//     response.createSendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: 'Product dismissed from restock queue',
+//         data: result,
+//     });
+// });
 
 export const productControllers = {
     createProduct,
@@ -81,5 +123,8 @@ export const productControllers = {
     getSingleProduct,
     updateProduct,
     deleteProduct,
-    adjustStock,
+    getRestockQueue,
+    //     adjustStock,
+    //     restockProduct,
+    //     dismissFromRestockQueue,
 };

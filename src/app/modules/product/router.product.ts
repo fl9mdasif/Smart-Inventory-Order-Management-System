@@ -16,20 +16,20 @@ router.post(
 );
 
 // GET /api/products — list all products
-// Query params:
-//   search        - substring match on name or description
-//   category      - MongoDB ObjectId string
-//   status        - active | draft | archived | out_of_stock | low_stock
-//   minStock      - minimum stockQuantity
-//   maxStock      - maximum stockQuantity
-//   lowStockOnly  - true → products at or below their minStockThreshold
-//   sort          - e.g. -createdAt | name | stockQuantity
-//   page          - page number (default 1)
-//   limit         - results per page (default 12)
 router.get('/', productControllers.getAllProducts);
+
+
+// GET /api/products/restock-queue — products needing restock, sorted by urgency
+router.get(
+    '/restock-queue',
+    auth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    productControllers.getRestockQueue,
+);
 
 // GET /api/products/:productId — single product by ObjectId or slug (public)
 router.get('/:productId', productControllers.getSingleProduct);
+
+
 
 // PATCH /api/products/:productId — update product fields (admin / superAdmin)
 router.patch(
@@ -39,13 +39,6 @@ router.patch(
     productControllers.updateProduct,
 );
 
-// PATCH /api/products/:productId/adjust-stock — increment / decrement stock
-// body: { delta: number }  (positive = restock, negative = deduct)
-router.patch(
-    '/:productId/adjust-stock',
-    auth(USER_ROLE.admin, USER_ROLE.superAdmin),
-    productControllers.adjustStock,
-);
 
 // DELETE /api/products/:productId (admin / superAdmin)
 router.delete(
@@ -55,3 +48,4 @@ router.delete(
 );
 
 export const productRoutes = router;
+

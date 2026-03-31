@@ -183,25 +183,102 @@ const deleteProduct = async (id: string) => {
  * Incrementally adjust stock (positive = restock, negative = sale/return).
  * Status is automatically updated by the model pre-hook.
  */
-const adjustStock = async (id: string, delta: number) => {
-    const product = await Product.findById(id);
-    if (!product) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
-    }
 
-    const newQty = (product.stockQuantity ?? 0) + delta;
-    if (newQty < 0) {
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            `Insufficient stock. Current stock: ${product.stockQuantity ?? 0}`,
-            'Stock underflow',
-        );
-    }
 
-    product.stockQuantity = newQty;
-    await product.save();
-    return product;
+// ── Restock Queue ─────────────────────────────────────────────────────────────
+/**
+ * Returns products whose stock is at or below their minStockThreshold,
+ * ordered by stockQuantity ASC (lowest stock = highest urgency).
+ * Excludes products the admin has manually dismissed.
+ * Adds a derived `priority` field: High / Medium / Low.
+ */
+const getRestockQueue = async () => {
+    const products = await Product.find({
+        $expr: { $lt: ['$stockQuantity', '$minStockThreshold'] },
+        restockIgnored: { $ne: true },
+    })
+        .populate('category', 'name slug')
+        .sort({ stockQuantity: 1 })          // lowest stock first
+        .lean();                             // plain JS objects so we can add fields
+
+    return products.map((p) => {
+        const qty = p.stockQuantity ?? 0;
+        const threshold = p.minStockThreshold ?? 5;
+
+        let priority: 'High' | 'Medium' | 'Low';
+        if (qty === 0) {
+            priority = 'High';
+        } else if (qty <= Math.ceil(threshold * 0.5)) {
+            priority = 'Medium';
+        } else {
+            priority = 'Low';
+        }
+
+        return { ...p, priority };
+    });
 };
+
+
+// const adjustStock = async (id: string, delta: number) => {
+//     const product = await Product.findById(id);
+//     if (!product) {
+//         throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
+//     }
+
+//     const newQty = (product.stockQuantity ?? 0) + delta;
+//     if (newQty < 0) {
+//         throw new AppError(
+//             httpStatus.BAD_REQUEST,
+//             `Insufficient stock. Current stock: ${product.stockQuantity ?? 0}`,
+//             'Stock underflow',
+//         );
+//     }
+
+//     product.stockQuantity = newQty;
+//     await product.save();
+
+//     return product;
+// };
+
+
+// /**
+//  * Restock a product: set an absolute stock quantity.
+//  * The pre-save hook automatically updates status and clears restockIgnored.
+//  */
+// const restockProduct = async (id: string, newQuantity: number) => {
+//     const product = await Product.findById(id);
+//     if (!product) {
+//         throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
+//     }
+//     if (newQuantity < 0) {
+//         throw new AppError(
+//             httpStatus.BAD_REQUEST,
+//             'Stock quantity cannot be negative',
+//             'Invalid quantity',
+//         );
+//     }
+
+//     product.stockQuantity  = newQuantity;
+//     product.restockIgnored = false;
+//     await product.save();
+
+//     return product;
+// };
+
+// /**
+//  * Dismiss a product from the restock queue without restocking.
+//  * Admin can bring it back by restocking via restockProduct.
+//  */
+// const dismissFromRestockQueue = async (id: string) => {
+//     const product = await Product.findById(id);
+//     if (!product) {
+//         throw new AppError(httpStatus.NOT_FOUND, 'Product not found', '');
+//     }
+
+//     product.restockIgnored = true;
+//     await product.save();
+//     return product;
+// };
 
 export const productServices = {
     createProduct,
@@ -209,5 +286,8 @@ export const productServices = {
     getSingleProduct,
     updateProduct,
     deleteProduct,
-    adjustStock,
+    getRestockQueue,
+    //     adjustStock,
+    //     restockProduct,
+    //     dismissFromRestockQueue,
 };

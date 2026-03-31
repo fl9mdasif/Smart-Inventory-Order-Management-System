@@ -12,7 +12,8 @@ export interface TProduct {
     status?: TProductStatus;
     stockQuantity?: number;
     minStockThreshold?: number;
-
+    /** When true, admin has manually dismissed this product from the restock queue */
+    restockIgnored?: boolean;
 }
 
 export interface TProductDocument extends TProduct, Document { }

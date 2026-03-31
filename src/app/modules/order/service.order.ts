@@ -88,6 +88,11 @@ const createOrder = async (payload: TOrder
         status: newStatus,
     });
 
+    await Product.findByIdAndUpdate(productId, {
+        stockQuantity: newQty,
+        status: newStatus,
+    });
+
     return order.populate('productId', 'name slug thumbnail status stockQuantity');
 };
 
@@ -172,6 +177,11 @@ const updateOrderStatus = async (orderId: string, status: TOrderStatus, note?: s
                 stockQuantity: restoredQty,
                 status: newStatus,
             });
+
+            await Product.findByIdAndUpdate(order.productId, {
+                stockQuantity: restoredQty,
+                status: newStatus,
+            });
         }
     }
 
@@ -197,6 +207,11 @@ const deleteOrder = async (orderId: string) => {
                 restoredQty > threshold ? 'active' :
                     restoredQty > 0 ? 'low_stock' :
                         'out_of_stock';
+
+            await Product.findByIdAndUpdate(order.productId, {
+                stockQuantity: restoredQty,
+                status: newStatus,
+            });
 
             await Product.findByIdAndUpdate(order.productId, {
                 stockQuantity: restoredQty,
