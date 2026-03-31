@@ -1,4 +1,4 @@
-# 🌿 Sultan Bazar (সূলতান বাজার) - E-Commerce Platform
+<!-- # 🌿 Sultan Bazar (সূলতান বাজার) - E-Commerce Platform
 
 **Sultan Bazar** is a full-featured, high-performance E-Commerce platform built for selling 100% natural spices, oils, and cooking essentials. Designed with a robust architecture and a beautiful modern user interface, the platform offers a seamless shopping experience for customers and powerful management tools for administrators.
 
@@ -204,4 +204,4 @@ The client will be available at `http://localhost:3000` and the server at `http:
 
 ---
 
-*Built with ❤️ for a seamless, natural shopping experience.*
+*Built with ❤️ for a seamless, natural shopping experience.* -->
