@@ -20,8 +20,8 @@ app.use(express_1.default.json());
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://master.d1nc0rwrl0o6av.amplifyapp.com', // Your Amplify frontend
-    'https://portfolio-dashboard-server-mongoose.vercel.app', // Your dashboard if needed
+    // 'https://master.d1nc0rwrl0o6av.amplifyapp.com', 
+    // 'https://portfolio-dashboard-server-mongoose.vercel.app', 
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {

@@ -16,6 +16,7 @@ exports.productServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const AppErrors_1 = __importDefault(require("../../errors/AppErrors"));
 const model_product_1 = require("./model.product");
+const service_activity_1 = require("../activity/service.activity");
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const isObjectId = (val) => /^[a-f\d]{24}$/i.test(val);
 // ── Create ────────────────────────────────────────────────────────────────────
@@ -33,6 +34,12 @@ const createProduct = (payload) => __awaiter(void 0, void 0, void 0, function* (
         throw new AppErrors_1.default(http_status_1.default.CONFLICT, `A product with slug "${payload.slug}" already exists.`, 'Duplicate slug');
     }
     const product = yield model_product_1.Product.create(payload);
+    // ── Log Activity ──────────────────────────────────────────────────────────
+    yield service_activity_1.ActivityService.createLog({
+        type: 'product',
+        message: `Product "${payload.name}" added to catalog`,
+        metadata: { productId: product._id }
+    });
     return product.populate('category', 'name slug');
 });
 // ── Get All (search + filter + sort + paginate) ───────────────────────────────
@@ -128,6 +135,21 @@ const updateProduct = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     }).populate('category', 'name slug');
     if (!updated) {
         throw new AppErrors_1.default(http_status_1.default.NOT_FOUND, 'Product not found', 'No product found with the given id');
+    }
+    // ── Log Activity ──────────────────────────────────────────────────────────
+    if (payload.stockQuantity !== undefined) {
+        yield service_activity_1.ActivityService.createLog({
+            type: 'product',
+            message: `Stock updated for "${updated.name}" (${payload.stockQuantity} units)`,
+            metadata: { productId: updated._id }
+        });
+    }
+    else {
+        yield service_activity_1.ActivityService.createLog({
+            type: 'product',
+            message: `Product "${updated.name}" details updated`,
+            metadata: { productId: updated._id }
+        });
     }
     return updated;
 });

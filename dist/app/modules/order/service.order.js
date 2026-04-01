@@ -17,6 +17,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppErrors_1 = __importDefault(require("../../errors/AppErrors"));
 const model_product_1 = require("../product/model.product");
 const model_order_1 = require("./model.order");
+const service_activity_1 = require("../activity/service.activity");
 // ── Create Order (admin) ───────────────────────────────────────────────────────
 const createOrder = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
@@ -76,6 +77,12 @@ const createOrder = (payload) => __awaiter(void 0, void 0, void 0, function* () 
     yield model_product_1.Product.findByIdAndUpdate(productId, {
         stockQuantity: newQty,
         status: newStatus,
+    });
+    // ── 6. Log Activity ────────────────────────────────────────────────────────
+    yield service_activity_1.ActivityService.createLog({
+        type: 'order',
+        message: `Order #${order._id.toString().slice(-6).toUpperCase()} created for ${customerName}`,
+        metadata: { orderId: order._id, productId: product._id }
     });
     return order.populate('productId', 'name slug thumbnail status stockQuantity');
 });
@@ -154,6 +161,12 @@ const updateOrderStatus = (orderId, status, note) => __awaiter(void 0, void 0, v
         }
     }
     yield order.save();
+    // ── Log Activity ──────────────────────────────────────────────────────────
+    yield service_activity_1.ActivityService.createLog({
+        type: 'order',
+        message: `Order #${order._id.toString().slice(-6).toUpperCase()} marked as ${status}`,
+        metadata: { orderId: order._id }
+    });
     return order;
 });
 // ── Delete Order ───────────────────────────────────────────────────────────────

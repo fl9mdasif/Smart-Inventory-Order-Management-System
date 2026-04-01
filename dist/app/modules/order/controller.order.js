@@ -49,10 +49,10 @@ const getOrderById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 // ── Update Order Status ────────────────────────────────────────────────────────
-// body: { status, note? }
+// body: { orderStatus, note? }
 const updateOrderStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { status, note } = req.body;
-    const result = yield service_order_1.orderServices.updateOrderStatus(req.params.orderId, status, note);
+    const { orderStatus, note } = req.body;
+    const result = yield service_order_1.orderServices.updateOrderStatus(req.params.orderId, orderStatus, note);
     sendResponse_1.response.createSendResponse(res, {
         statusCode: http_status_1.default.OK,
         success: true,

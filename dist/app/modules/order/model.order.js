@@ -51,6 +51,11 @@ const orderSchema = new mongoose_1.Schema({
         default: 0,
         min: [0, 'Discount cannot be negative'],
     },
+    totalAmount: {
+        type: Number,
+        required: true,
+        min: [0, 'Total amount cannot be negative'],
+    },
     // ── Order Lifecycle ───────────────────────────────────────────────────
     orderStatus: {
         type: String,

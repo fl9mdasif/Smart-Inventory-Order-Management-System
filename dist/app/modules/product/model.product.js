@@ -28,6 +28,11 @@ const productSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'Thumbnail URL is required'],
     },
+    price: {
+        type: Number,
+        required: [true, 'Price is required'],
+        min: [0, 'Price cannot be negative'],
+    },
     // ── Inventory ──────────────────────────────────────────────────────────
     stockQuantity: {
         type: Number,

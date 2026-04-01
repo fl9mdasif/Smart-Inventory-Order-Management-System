@@ -41,7 +41,7 @@ const placeOrderValidationSchema = zod_1.z.object({
 // ── Update Order Status (admin) ────────────────────────────────────────────────
 const updateOrderStatusValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
-        status: zod_1.z.enum(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned'], { message: 'Invalid order status' }),
+        orderStatus: zod_1.z.enum(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned'], { message: 'Invalid order status' }),
         note: zod_1.z.string().optional(),
     }),
 });
