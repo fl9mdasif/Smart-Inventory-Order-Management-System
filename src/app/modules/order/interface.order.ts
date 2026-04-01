@@ -11,10 +11,6 @@ export type TOrderStatus =
     | 'cancelled'
     | 'returned';
 
-
-
-
-
 export interface TShippingAddress {
     fullName: string;
     phone: string;
@@ -40,6 +36,7 @@ export interface TOrder {
     quantity: number;
     shippingAddress: TShippingAddress;
     subtotal: number;
+    totalAmount: number;
     statusHistory: TStatusHistoryEntry[];
 
     discount?: number;
@@ -47,8 +44,6 @@ export interface TOrder {
     deliveredAt?: Date;
     cancelledAt?: Date;
     cancelReason?: string;
-
-
 }
 
 export interface TOrderDocument extends TOrder, Document { }

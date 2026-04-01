@@ -10,7 +10,7 @@ const createCategoryValidationSchema = z.object({
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
         message:
           'Slug must be lowercase letters, numbers, and hyphens only (e.g. cooking-oil)',
-      }),
+      }).optional(),
     description: z.string().optional(),
     thumbnail: z.string().optional(),
     isActive: z.boolean().optional().default(true),

@@ -38,10 +38,10 @@ const getOrderById = catchAsync(async (req, res) => {
 });
 
 // ── Update Order Status ────────────────────────────────────────────────────────
-// body: { status, note? }
+// body: { orderStatus, note? }
 const updateOrderStatus = catchAsync(async (req, res) => {
-    const { status, note } = req.body;
-    const result = await orderServices.updateOrderStatus(req.params.orderId, status, note);
+    const { orderStatus, note } = req.body;
+    const result = await orderServices.updateOrderStatus(req.params.orderId, orderStatus, note);
     response.createSendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -1,14 +1,15 @@
 import { Document, Model, Types } from 'mongoose';
 
 
-export type TProductStatus = 'active' | 'out_of_stock' | 'low_stock' | 'draft' | 'archived';
+export type TProductStatus = 'active' | 'out_of_stock' | 'low_stock';
 
 export interface TProduct {
     name: string;
     slug: string;
     description: string;
-    category: Types.ObjectId;
     thumbnail: string;
+    category: Types.ObjectId;
+    price: number;
     status?: TProductStatus;
     stockQuantity?: number;
     minStockThreshold?: number;

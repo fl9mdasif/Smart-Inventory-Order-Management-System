@@ -2,6 +2,7 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppErrors';
 import { TProduct } from './interface.product';
 import { Product } from './model.product';
+import { ActivityService } from '../activity/service.activity';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const isObjectId = (val: string) => /^[a-f\d]{24}$/i.test(val);
@@ -31,6 +32,14 @@ const createProduct = async (payload: TProduct) => {
     }
 
     const product = await Product.create(payload);
+
+    // ── Log Activity ──────────────────────────────────────────────────────────
+    await ActivityService.createLog({
+        type: 'product',
+        message: `Product "${payload.name}" added to catalog`,
+        metadata: { productId: product._id as string }
+    });
+
     return product.populate('category', 'name slug');
 };
 
@@ -162,6 +171,22 @@ const updateProduct = async (id: string, payload: Partial<TProduct>) => {
             'No product found with the given id',
         );
     }
+
+    // ── Log Activity ──────────────────────────────────────────────────────────
+    if (payload.stockQuantity !== undefined) {
+        await ActivityService.createLog({
+            type: 'product',
+            message: `Stock updated for "${updated.name}" (${payload.stockQuantity} units)`,
+            metadata: { productId: updated._id as string }
+        });
+    } else {
+        await ActivityService.createLog({
+            type: 'product',
+            message: `Product "${updated.name}" details updated`,
+            metadata: { productId: updated._id as string }
+        });
+    }
+
     return updated;
 };
 

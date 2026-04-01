@@ -30,6 +30,11 @@ const productSchema = new Schema<TProductDocument>(
             type: String,
             required: [true, 'Thumbnail URL is required'],
         },
+        price: {
+            type: Number,
+            required: [true, 'Price is required'],
+            min: [0, 'Price cannot be negative'],
+        },
 
         // ── Inventory ──────────────────────────────────────────────────────────
         stockQuantity: {
